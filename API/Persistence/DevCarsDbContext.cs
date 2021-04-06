@@ -1,27 +1,48 @@
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using API.Entities;
 
 namespace API.Persistence
 {
-    public class DevCarsDbContext
+    public class DevCarsDbContext : DbContext
     {
-        public DevCarsDbContext()
+        public DevCarsDbContext(DbContextOptions<DevCarsDbContext> options) : base(options)
         {
-            Cars = new List<Car>
-            {
-                new Car(1,"123ABC", "HONDA","CIVIC",2021, 10000, "Red", new System.DateTime(2021, 1, 1)),
-                new Car(2,"345ABC", "VW","JETTA",2021, 20000, "White", new System.DateTime(2021, 4, 2)),
-                new Car(3,"567ABC", "TESLA","125",2021, 30000, "Black", new System.DateTime(2021, 2, 3))
-            };
-            Customers = new List<Customer>
-            {
-                new Customer(1,"Ignacio Gomez", "1254GTSRA", new System.DateTime(1970, 2, 5)),
-                new Customer(2,"Juan Carlos Perez", "1254JCP", new System.DateTime(1975, 5, 18)),
-                new Customer(3,"Joaquin Lopez", "1254JL", new System.DateTime(1985, 12, 15)),
-            };
+
         }
 
-        public List<Car> Cars { get; set; }
-        public List<Customer> Customers { get; set; }
+        public DbSet<Car> Cars { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<ExtraOrderItem> ExtraOrderItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Car>()
+            .HasKey(c => c.Id);
+            modelBuilder.Entity<Car>()
+            .ToTable("TB_CAR");
+            modelBuilder.Entity<Car>()
+            .Property(c => c.Brand)
+            .HasMaxLength(100);
+            modelBuilder.Entity<Car>()
+            .Property(c => c.ProductionDate)
+            .HasDefaultValueSql("GETDATE()");
+ 
+            modelBuilder.Entity<Customer>()
+            .HasKey(c => c.Id);
+            modelBuilder.Entity<Customer>()
+            .ToTable("TB_CUSTOMER");
+
+            modelBuilder.Entity<Order>()
+            .HasKey(o => o.Id);
+            modelBuilder.Entity<Order>()
+            .ToTable("TB_ORDER");
+
+            modelBuilder.Entity<ExtraOrderItem>()
+            .HasKey(e => e.Id);
+            modelBuilder.Entity<ExtraOrderItem>()
+            .ToTable("TB_EXTRA_ORDER_ITEM")
+        }
     }
 }

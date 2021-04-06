@@ -19,7 +19,7 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] AddCustomerInputModel model)
         {
-            var customer = new Customer(4, model.FullName, model.Document, model.BirthDate);
+            var customer = new Customer(model.FullName, model.Document, model.BirthDate);
             _dbContext.Customers.Add(customer);
             return NoContent();
         }
@@ -30,7 +30,7 @@ namespace API.Controllers
         {
             var extraItems = model.ExtraItems.Select(e => new ExtraOrderItem(e.Description, e.Price)).ToList();
             var car = _dbContext.Cars.SingleOrDefault(c => c.Id == model.IdCar);
-            var order = new Order(1, model.IdCar, model.IdCustomer, car.Price, extraItems);
+            var order = new Order(model.IdCar, model.IdCustomer, car.Price, extraItems);
             var customer = _dbContext.Customers.SingleOrDefault(c => c.Id == model.IdCustomer);
             customer.Purchase(order);
             return CreatedAtAction(

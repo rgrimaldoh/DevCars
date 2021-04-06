@@ -5,9 +5,9 @@ namespace API.Entities
 {
     public class Order
     {
-        public Order(int id, int idCar, int idCustomer, decimal price, List<ExtraOrderItem> items)
+        protected Order() {}
+        public Order(int idCar, int idCustomer, decimal price, List<ExtraOrderItem> items)
         {
-            Id = id;
             IdCar = idCar;
             IdCustomer = idCustomer;
             TotalCost = items.Sum(i => i.Price) + price;
@@ -18,6 +18,8 @@ namespace API.Entities
         public int IdCar { get; private set; }
         public int IdCustomer { get; private set; }
         public decimal TotalCost { get; private set; }
+        public Car Car { get; set; }
+        public Customer Customer { get; set; }
         public List<ExtraOrderItem> ExtraItems { get; private set; }
     }
 

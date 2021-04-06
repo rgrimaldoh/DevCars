@@ -65,7 +65,7 @@ namespace API.Controllers
             {
                 return BadRequest("Model can not have more than 50 characters");
             }
-            var car = new Car(4, model.VinCode, model.Brand, model.Model, model.Year, model.Price, model.Color, model.ProductionData);
+            var car = new Car(model.VinCode, model.Brand, model.Model, model.Year, model.Price, model.Color, model.ProductionData);
             _dbContext.Cars.Add(car);
             return CreatedAtAction(
                 nameof(GetById),
