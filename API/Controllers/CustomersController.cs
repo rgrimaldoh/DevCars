@@ -4,6 +4,7 @@ using API.InputModels;
 using API.Persistence;
 using API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -21,6 +22,7 @@ namespace API.Controllers
         {
             var customer = new Customer(model.FullName, model.Document, model.BirthDate);
             _dbContext.Customers.Add(customer);
+            _dbContext.SaveChanges();
             return NoContent();
         }
 
@@ -31,11 +33,11 @@ namespace API.Controllers
             var extraItems = model.ExtraItems.Select(e => new ExtraOrderItem(e.Description, e.Price)).ToList();
             var car = _dbContext.Cars.SingleOrDefault(c => c.Id == model.IdCar);
             var order = new Order(model.IdCar, model.IdCustomer, car.Price, extraItems);
-            var customer = _dbContext.Customers.SingleOrDefault(c => c.Id == model.IdCustomer);
-            customer.Purchase(order);
+            _dbContext.Orders.Add(order);
+            _dbContext.SaveChanges();
             return CreatedAtAction(
                 nameof(GetOrder),
-                new {id = customer.Id, orderId = order.Id},
+                new {id = order.IdCustomer, orderId = order.Id},
                 model
             );
         }
@@ -44,13 +46,20 @@ namespace API.Controllers
         [HttpGet("{id}/orders/{orderId}")]
         public IActionResult GetOrder(int id, int orderId)
         {
-            var customer = _dbContext.Customers.SingleOrDefault(c => c.Id == id);
-            if(customer == null)
+            var order = _dbContext.Orders
+            .Include(o => o.ExtraItems)
+            .SingleOrDefault(o => o.Id == orderId);
+            
+            if(order == null)
             {
                 return NotFound();
             }
-            var order = customer.Orders.SingleOrDefault(o => o.Id == orderId);
-            var extraItems = order.ExtraItems.Select(e => e.Description).ToList();
+
+            var extraItems = order
+            .ExtraItems
+            .Select(e => e.Description)
+            .ToList();
+            
             var orderViewModel = new OrderDetailsViewModel(order.IdCar, order.IdCustomer, order.TotalCost, extraItems);
             return Ok(orderViewModel);
         }

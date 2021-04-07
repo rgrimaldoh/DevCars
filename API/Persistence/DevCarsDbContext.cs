@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using API.Entities;
+using API.Persistence.Configurations;
+using System.Reflection;
 
 namespace API.Persistence
 {
@@ -18,31 +20,13 @@ namespace API.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Car>()
-            .HasKey(c => c.Id);
-            modelBuilder.Entity<Car>()
-            .ToTable("TB_CAR");
-            modelBuilder.Entity<Car>()
-            .Property(c => c.Brand)
-            .HasMaxLength(100);
-            modelBuilder.Entity<Car>()
-            .Property(c => c.ProductionDate)
-            .HasDefaultValueSql("GETDATE()");
- 
-            modelBuilder.Entity<Customer>()
-            .HasKey(c => c.Id);
-            modelBuilder.Entity<Customer>()
-            .ToTable("TB_CUSTOMER");
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            modelBuilder.Entity<Order>()
-            .HasKey(o => o.Id);
-            modelBuilder.Entity<Order>()
-            .ToTable("TB_ORDER");
+            //modelBuilder.ApplyConfiguration(new CarDbConfiguration());
+            //modelBuilder.ApplyConfiguration(new CustomerDbConfiguration());
+            //modelBuilder.ApplyConfiguration(new OrderDbConfiguration());
+            //modelBuilder.ApplyConfiguration(new ExtraOrderItemDbConfiguration());
 
-            modelBuilder.Entity<ExtraOrderItem>()
-            .HasKey(e => e.Id);
-            modelBuilder.Entity<ExtraOrderItem>()
-            .ToTable("TB_EXTRA_ORDER_ITEM")
         }
     }
 }

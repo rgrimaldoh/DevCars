@@ -67,6 +67,7 @@ namespace API.Controllers
             }
             var car = new Car(model.VinCode, model.Brand, model.Model, model.Year, model.Price, model.Color, model.ProductionData);
             _dbContext.Cars.Add(car);
+            _dbContext.SaveChanges();
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = car.Id},
@@ -85,7 +86,7 @@ namespace API.Controllers
             }
 
             car.Update(model.Color, model.Price);
-
+            _dbContext.SaveChanges();
             return NoContent();
         }
 
@@ -99,6 +100,7 @@ namespace API.Controllers
                 return NotFound();
             }
             car.SetAsSuspended();
+            _dbContext.SaveChanges();
             return NoContent();
         }
 
